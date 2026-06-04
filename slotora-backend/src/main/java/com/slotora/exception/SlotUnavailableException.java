@@ -1,4 +1,4 @@
-package com.slotora.backend.exception;
+package com.slotora.exception;
 
 public class SlotUnavailableException extends RuntimeException {
     public SlotUnavailableException(String message) {
