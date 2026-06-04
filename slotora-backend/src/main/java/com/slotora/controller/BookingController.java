@@ -18,6 +18,7 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<?> getMyBookings(@AuthenticationPrincipal User user) {
+        System.out.println("User ID: " + user.getId());
         return ResponseEntity.ok(bookingService.getBookingsForUser(user.getId()));
     }
 

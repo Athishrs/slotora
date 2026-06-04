@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(com.slotora.backend.exception.SlotUnavailableException.class)
-    public ResponseEntity<String> handleSlotUnavailable(com.slotora.backend.exception.SlotUnavailableException ex) {
+    @ExceptionHandler(com.slotora.exception.SlotUnavailableException.class)
+    public ResponseEntity<String> handleSlotUnavailable(com.slotora.exception.SlotUnavailableException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
     // Validation errors — @Valid failed
