@@ -1,9 +1,27 @@
-function App() {
+import { Routes, Route } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import DashboardPage from './pages/DashboardPage'
+import MyBookingsPage from './pages/MyBookingsPage'
+import NewBookingPage from './pages/NewBookingPage'
+import LandingPage from './pages/LandingPage'
+
+export default function App() {
   return (
-    <div className="bg-[#FDFAF4] min-h-screen">
-      <h1 className="text-3xl font-bold text-[#3E342E]">Slotora</h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={
+        <ProtectedRoute><DashboardPage /></ProtectedRoute>
+      } />
+      <Route path="/bookings" element={
+        <ProtectedRoute><MyBookingsPage /></ProtectedRoute>
+      } />
+      <Route path="/book" element={
+        <ProtectedRoute><NewBookingPage /></ProtectedRoute>
+      } />
+    </Routes>
   )
 }
-
-export default App
