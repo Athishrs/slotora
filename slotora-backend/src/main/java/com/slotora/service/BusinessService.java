@@ -1,6 +1,8 @@
 package com.slotora.service;
 
+import com.slotora.dto.request.BusinessRequest;
 import com.slotora.dto.response.BusinessResponse;
+import com.slotora.entity.Business;
 import com.slotora.repository.BusinessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,5 +20,14 @@ public class BusinessService {
                 .map(b -> new BusinessResponse(b.getId(), b.getName(),
                         b.getCategory(), b.getDescription()))
                 .collect(Collectors.toList());
+    }
+
+    public BusinessResponse createBusiness(BusinessRequest req) {
+        Business b = new Business();
+        b.setName(req.getName());
+        b.setCategory(req.getCategory());
+        b.setDescription(req.getDescription());
+        businessRepository.save(b);
+        return new BusinessResponse(b.getId(), b.getName(), b.getCategory(), b.getDescription());
     }
 }

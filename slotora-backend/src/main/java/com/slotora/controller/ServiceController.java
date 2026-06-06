@@ -1,6 +1,8 @@
 package com.slotora.controller;
 
+import com.slotora.dto.request.ServiceRequest;
 import com.slotora.service.ServiceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,5 +17,10 @@ public class ServiceController {
     @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(serviceService.getAllServices());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody ServiceRequest req) {
+        return ResponseEntity.status(201).body(serviceService.createService(req));
     }
 }

@@ -1,6 +1,8 @@
 package com.slotora.controller;
 
+import com.slotora.dto.request.BusinessRequest;
 import com.slotora.service.BusinessService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,4 +18,8 @@ public class BusinessController {
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(businessService.getAllBusinesses());
     }
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody BusinessRequest req) {
+        return ResponseEntity.status(201).body(businessService.createBusiness(req));
+}
 }
