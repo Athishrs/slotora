@@ -136,36 +136,46 @@ export default function NewBookingPage() {
               {/* Business select */}
               <div>
                 <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">Business</label>
-                <select
-                  value={selectedBusinessId}
-                  onChange={handleBusinessChange}
-                  required
-                  className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
-                  style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                  <option value="">Select a business</option>
-                  {businesses.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={selectedBusinessId}
+                    onChange={handleBusinessChange}
+                    required
+                    className="w-full appearance-none bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 pr-10 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
+                    style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                    <option value="">Select a business</option>
+                    {businesses.map(b => (
+                      <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                  </select>
+                  <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8C7F76" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
               </div>
 
               {/* Service select — shown once a business is chosen */}
               {selectedBusinessId && (
                 <div>
                   <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">Service</label>
-                  <select
-                    value={selectedServiceId}
-                    onChange={handleServiceChange}
-                    required
-                    className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
-                    style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                    <option value="">Select a service</option>
-                    {businessServices.map(s => (
-                      <option key={s.id} value={s.id}>
-                        {s.name} · {s.durationMins}m · ${s.price}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={selectedServiceId}
+                      onChange={handleServiceChange}
+                      required
+                      className="w-full appearance-none bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 pr-10 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
+                      style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                      <option value="">Select a service</option>
+                      {businessServices.map(s => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} · {s.durationMins}m · ${s.price}
+                        </option>
+                      ))}
+                    </select>
+                    <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8C7F76" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </div>
                 </div>
               )}
 
@@ -175,16 +185,21 @@ export default function NewBookingPage() {
                   <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">
                     Staff <span className="font-normal text-[#8C7F76]">(optional)</span>
                   </label>
-                  <select
-                    value={selectedStaffId}
-                    onChange={e => setSelectedStaffId(e.target.value)}
-                    className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
-                    style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                    <option value="">No preference</option>
-                    {staffOptions.map(s => (
-                      <option key={s.id} value={s.id}>{s.name} · {s.role}</option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={selectedStaffId}
+                      onChange={e => setSelectedStaffId(e.target.value)}
+                      className="w-full appearance-none bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 pr-10 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
+                      style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                      <option value="">No preference</option>
+                      {staffOptions.map(s => (
+                        <option key={s.id} value={s.id}>{s.name} · {s.role}</option>
+                      ))}
+                    </select>
+                    <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8C7F76" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </div>
                 </div>
               )}
 
