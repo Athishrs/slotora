@@ -28,15 +28,17 @@ public class BookingService {
     }
 
     public BookingResponse createBooking(Long userId, BookingRequest req) {
-        if (bookingRepository.existsByStaffIdAndAppointmentTime(
+        if (req.getStaffId() != null && bookingRepository.existsByStaffIdAndAppointmentTime(
                 req.getStaffId(), req.getAppointmentTime())) {
             throw new SlotUnavailableException("This slot is already booked.");
         }
 
         var service = serviceRepository.findById(req.getServiceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
-        var staff = staffRepository.findById(req.getStaffId())
-                .orElseThrow(() -> new ResourceNotFoundException("Staff not found"));
+        var staff = req.getStaffId() != null
+                ? staffRepository.findById(req.getStaffId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Staff not found"))
+                : null;
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -62,10 +64,11 @@ public class BookingService {
     }
 
     private BookingResponse toResponse(Booking b) {
+        String staffName = b.getStaff() != null ? b.getStaff().getName() : null;
         return new BookingResponse(
                 b.getId(),
                 b.getService().getName(),
-                b.getStaff().getName(),
+                staffName,
                 b.getAppointmentTime(),
                 b.getStatus(),
                 b.getNotes()

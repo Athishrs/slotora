@@ -7,8 +7,12 @@ import api from '../api/api'
 const TIME_SLOTS = ['9:00 AM', '10:30 AM', '12:00 PM', '1:30 PM', '3:00 PM', '4:30 PM']
 
 export default function NewBookingPage() {
-  const [services, setServices] = useState([])
+  const [businesses, setBusinesses] = useState([])
+  const [allServices, setAllServices] = useState([])
+  const [selectedBusinessId, setSelectedBusinessId] = useState('')
   const [selectedServiceId, setSelectedServiceId] = useState('')
+  const [staffOptions, setStaffOptions] = useState([])
+  const [selectedStaffId, setSelectedStaffId] = useState('')
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedSlot, setSelectedSlot] = useState('')
   const [notes, setNotes] = useState('')
@@ -19,15 +23,45 @@ export default function NewBookingPage() {
   const location = useLocation()
 
   useEffect(() => {
-    api.get('/api/services').then(res => {
-      setServices(res.data)
+    Promise.all([
+      api.get('/api/businesses'),
+      api.get('/api/services'),
+    ]).then(([bizRes, svcRes]) => {
+      setBusinesses(bizRes.data)
+      setAllServices(svcRes.data)
+
       const preselect = location.state?.serviceId
-      if (preselect) setSelectedServiceId(String(preselect))
-      else if (res.data.length > 0) setSelectedServiceId(String(res.data[0].id))
-    }).catch(err => console.error('Failed to fetch services', err))
+      if (preselect) {
+        const svc = svcRes.data.find(s => String(s.id) === String(preselect))
+        if (svc) {
+          setSelectedBusinessId(String(svc.businessId))
+          setSelectedServiceId(String(preselect))
+        }
+      }
+    }).catch(err => console.error('Failed to load booking data', err))
   }, [location.state])
 
-  const selectedService = services.find(s => String(s.id) === String(selectedServiceId))
+  const businessServices = allServices.filter(s => String(s.businessId) === String(selectedBusinessId))
+  const selectedService = businessServices.find(s => String(s.id) === String(selectedServiceId))
+
+  const handleBusinessChange = (e) => {
+    setSelectedBusinessId(e.target.value)
+    setSelectedServiceId('')
+    setStaffOptions([])
+    setSelectedStaffId('')
+  }
+
+  const handleServiceChange = (e) => {
+    setSelectedServiceId(e.target.value)
+    setSelectedStaffId('')
+  }
+
+  useEffect(() => {
+    if (!selectedBusinessId) { setStaffOptions([]); setSelectedStaffId(''); return }
+    api.get(`/api/staff?businessId=${selectedBusinessId}`)
+      .then(res => { setStaffOptions(res.data); setSelectedStaffId('') })
+      .catch(() => setStaffOptions([]))
+  }, [selectedBusinessId])
 
   const buildAppointmentTime = () => {
     if (!selectedDate || !selectedSlot) return ''
@@ -46,7 +80,7 @@ export default function NewBookingPage() {
     try {
       await api.post('/api/bookings', {
         serviceId: parseInt(selectedServiceId),
-        staffId: 1,
+        ...(selectedStaffId ? { staffId: parseInt(selectedStaffId) } : {}),
         appointmentTime: buildAppointmentTime(),
         notes,
       })
@@ -58,13 +92,17 @@ export default function NewBookingPage() {
     }
   }
 
-  const bizName = selectedService?.businessName || 'Grooming Salon'
+  const selectedBusiness = businesses.find(b => String(b.id) === String(selectedBusinessId))
+  const bizName = selectedBusiness?.name || ''
   const color = hashColor(bizName)
+
+  const selectedStaff = staffOptions.find(s => String(s.id) === String(selectedStaffId))
 
   const summaryRows = selectedService ? [
     ['Date',     selectedDate ? new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '—'],
     ['Time',     selectedSlot || '—'],
     ['Duration', `${selectedService.durationMins} min`],
+    ...(selectedBusinessId ? [['Staff', selectedStaff ? selectedStaff.name : 'No preference']] : []),
   ] : []
 
   return (
@@ -95,23 +133,60 @@ export default function NewBookingPage() {
                 </div>
               )}
 
-              {/* Service select */}
+              {/* Business select */}
               <div>
-                <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">Service</label>
+                <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">Business</label>
                 <select
-                  value={selectedServiceId}
-                  onChange={e => setSelectedServiceId(e.target.value)}
+                  value={selectedBusinessId}
+                  onChange={handleBusinessChange}
                   required
                   className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
                   style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                  <option value="">Select a service</option>
-                  {services.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} · {s.durationMins}m · ${s.price}
-                    </option>
+                  <option value="">Select a business</option>
+                  {businesses.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
                 </select>
               </div>
+
+              {/* Service select — shown once a business is chosen */}
+              {selectedBusinessId && (
+                <div>
+                  <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">Service</label>
+                  <select
+                    value={selectedServiceId}
+                    onChange={handleServiceChange}
+                    required
+                    className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
+                    style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                    <option value="">Select a service</option>
+                    {businessServices.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} · {s.durationMins}m · ${s.price}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Staff — optional, always shown once a business is chosen */}
+              {selectedBusinessId && (
+                <div>
+                  <label className="block text-[12.5px] font-semibold text-[#3E342E] mb-1.5">
+                    Staff <span className="font-normal text-[#8C7F76]">(optional)</span>
+                  </label>
+                  <select
+                    value={selectedStaffId}
+                    onChange={e => setSelectedStaffId(e.target.value)}
+                    className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors cursor-pointer"
+                    style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                    <option value="">No preference</option>
+                    {staffOptions.map(s => (
+                      <option key={s.id} value={s.id}>{s.name} · {s.role}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Date */}
               <div>
@@ -197,7 +272,7 @@ export default function NewBookingPage() {
 
               <button
                 type="submit"
-                disabled={loading || !selectedService}
+                disabled={loading || !selectedService || !selectedBusinessId}
                 className="w-full bg-[#E87E5B] text-white font-bold py-3.5 rounded-[20px] hover:bg-[#d46e4b] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 style={{ fontSize: 14.5, fontFamily: "'Hanken Grotesk', sans-serif" }}>
                 {loading ? 'Booking…' : <><span>Confirm booking</span><Icon name="arrow" size={16} color="#fff" /></>}

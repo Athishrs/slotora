@@ -24,7 +24,7 @@ export default function Navbar() {
 
   const active = location.pathname === '/dashboard' ? 'Dashboard'
     : location.pathname === '/bookings' ? 'My Bookings'
-    : location.pathname === '/owner' ? 'Owner'
+    : location.pathname === '/owner' || location.pathname === '/owner/manage' ? 'Owner'
     : ''
 
   return (
@@ -40,8 +40,8 @@ export default function Navbar() {
         <Link to="/bookings" style={{ textDecoration: 'none', fontSize: 13.5, fontWeight: active === 'My Bookings' ? 700 : 500, color: active === 'My Bookings' ? '#E87E5B' : '#8C7F76' }}>
           My Bookings
         </Link>
-        <Link to="/owner" style={{ textDecoration: 'none', fontSize: 13.5, fontWeight: active === 'Owner' ? 700 : 500, color: active === 'Owner' ? '#E87E5B' : '#8C7F76' }}>
-          List your business
+        <Link to="/owner/manage" style={{ textDecoration: 'none', fontSize: 13.5, fontWeight: active === 'Owner' ? 700 : 500, color: active === 'Owner' ? '#E87E5B' : '#8C7F76' }}>
+          My Business
         </Link>
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-[#FBEBD9] flex items-center justify-center">
@@ -70,11 +70,11 @@ export default function Navbar() {
           <Icon name="calendar" size={20} color={active === 'My Bookings' ? '#E87E5B' : '#8C7F76'} />
           <span style={{ fontSize: 10, fontWeight: 600, color: active === 'My Bookings' ? '#E87E5B' : '#8C7F76', marginTop: 2 }}>Bookings</span>
         </Link>
-        <Link to="/owner"
+        <Link to="/owner/manage"
           className="flex flex-col items-center px-3 py-1.5 rounded-xl"
           style={{ textDecoration: 'none', background: active === 'Owner' ? '#FBEBD9' : 'transparent' }}>
           <Icon name="star" size={20} color={active === 'Owner' ? '#E87E5B' : '#8C7F76'} />
-          <span style={{ fontSize: 10, fontWeight: 600, color: active === 'Owner' ? '#E87E5B' : '#8C7F76', marginTop: 2 }}>List</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: active === 'Owner' ? '#E87E5B' : '#8C7F76', marginTop: 2 }}>Business</span>
         </Link>
         <button
           onClick={() => { logout(); navigate('/login') }}

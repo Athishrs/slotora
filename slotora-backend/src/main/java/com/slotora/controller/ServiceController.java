@@ -23,4 +23,10 @@ public class ServiceController {
     public ResponseEntity<?> create(@Valid @RequestBody ServiceRequest req) {
         return ResponseEntity.status(201).body(serviceService.createService(req));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        serviceService.deleteService(id);
+        return ResponseEntity.noContent().build();
+    }
 }

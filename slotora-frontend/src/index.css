@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html, body {
+    font-family: 'Hanken Grotesk', sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+
+  /* Form elements don't inherit font-family by default in most browsers */
+  input, textarea, select, button {
+    font-family: inherit;
+  }
+}

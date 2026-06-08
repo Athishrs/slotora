@@ -24,7 +24,7 @@ function BookingCard({ booking, onCancel }) {
                 {booking.serviceName}
               </div>
               <div className="text-[12px] text-[#8C7F76] mt-0.5 truncate">
-                {booking.businessName ? `${booking.businessName} · ` : ''}{booking.staffName}
+                {booking.businessName ? `${booking.businessName} · ` : ''}{booking.staffName || 'Any available staff'}
               </div>
             </div>
             <StatusBadge status={booking.status} />
@@ -51,11 +51,6 @@ function BookingCard({ booking, onCancel }) {
 
       {!cancelled && (
         <div className="flex gap-2 mt-3.5 pt-3.5 border-t border-[#EFE6D9]">
-          <button
-            className="flex-1 text-[13px] font-semibold text-[#3E342E] px-4 py-2 rounded-[16px] border border-[#EFE6D9] bg-white hover:bg-[#FAF5EE] transition-colors cursor-pointer"
-            style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-            Reschedule
-          </button>
           <button
             onClick={() => onCancel(booking.id)}
             className="flex-1 inline-flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#B23C28] px-4 py-2 rounded-[16px] border border-[#EFE6D9] bg-white hover:bg-[#F7DCD2] transition-colors cursor-pointer"

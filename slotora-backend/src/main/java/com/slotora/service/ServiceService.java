@@ -25,6 +25,13 @@ public class ServiceService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteService(Long serviceId) {
+        if (!serviceRepository.existsById(serviceId)) {
+            throw new ResourceNotFoundException("Service not found");
+        }
+        serviceRepository.deleteById(serviceId);
+    }
+
     public ServiceResponse createService(ServiceRequest req) {
         Business business = businessRepository.findById(req.getBusinessId())
                 .orElseThrow(() -> new ResourceNotFoundException("Business not found"));

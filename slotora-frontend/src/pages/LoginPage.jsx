@@ -100,9 +100,6 @@ export default function LoginPage() {
               className="w-full bg-white border border-[#EFE6D9] rounded-[20px] px-4 py-3 text-[13.5px] text-[#3E342E] outline-none focus:border-[#E87E5B] transition-colors"
               style={{ fontFamily: "'Hanken Grotesk', sans-serif" }} />
           </div>
-          <div className="flex justify-end">
-            <span className="text-[13px] text-[#E87E5B] font-semibold cursor-pointer">Forgot password?</span>
-          </div>
           <button type="submit" disabled={loading}
             className="w-full bg-[#E87E5B] text-white font-bold py-3.5 rounded-[20px] hover:bg-[#d46e4b] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-1 cursor-pointer"
             style={{ fontSize: 14.5, fontFamily: "'Hanken Grotesk', sans-serif" }}>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import api from '../api/api'
@@ -6,6 +6,11 @@ import api from '../api/api'
 export default function BusinessOwnerPage() {
   const [step, setStep] = useState(1)
   const [businessId, setBusinessId] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    api.get('/api/businesses/my').then(() => navigate('/owner/manage')).catch(() => {})
+  }, [navigate])
 
   const [bizName, setBizName] = useState('')
   const [bizCategory, setBizCategory] = useState('')
@@ -14,13 +19,14 @@ export default function BusinessOwnerPage() {
   const [serviceName, setServiceName] = useState('')
   const [durationMins, setDurationMins] = useState('')
   const [price, setPrice] = useState('')
+  const [services, setServices] = useState([])
 
   const [staffName, setStaffName] = useState('')
   const [staffRole, setStaffRole] = useState('')
+  const [staffList, setStaffList] = useState([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const navigate = useNavigate()
 
   const handleCreateBusiness = async (e) => {
     e.preventDefault()
@@ -34,7 +40,7 @@ export default function BusinessOwnerPage() {
       })
       setBusinessId(res.data.id)
       setStep(2)
-    } catch (err) {
+    } catch {
       setError('Failed to create business.')
     } finally {
       setLoading(false)
@@ -52,8 +58,11 @@ export default function BusinessOwnerPage() {
         price: parseFloat(price),
         businessId
       })
-      setStep(3)
-    } catch (err) {
+      setServices(prev => [...prev, { name: serviceName, durationMins, price }])
+      setServiceName('')
+      setDurationMins('')
+      setPrice('')
+    } catch {
       setError('Failed to add service.')
     } finally {
       setLoading(false)
@@ -70,8 +79,10 @@ export default function BusinessOwnerPage() {
         role: staffRole,
         businessId
       })
-      navigate('/dashboard')
-    } catch (err) {
+      setStaffList(prev => [...prev, { name: staffName, role: staffRole }])
+      setStaffName('')
+      setStaffRole('')
+    } catch {
       setError('Failed to add staff.')
     } finally {
       setLoading(false)
@@ -141,33 +152,53 @@ export default function BusinessOwnerPage() {
         {step === 2 && (
           <div>
             <h1 className="font-['Bricolage_Grotesque'] text-3xl font-extrabold text-[#3E342E] mb-2">
-              Add a service
+              Add services
             </h1>
-            <p className="text-[#8C7F76] mb-6">Step 2 of 3 — What do you offer?</p>
+            <p className="text-[#8C7F76] mb-6">Step 2 of 3 — What do you offer? (optional)</p>
+
+            {services.length > 0 && (
+              <ul className="mb-6 flex flex-col gap-2">
+                {services.map((s, i) => (
+                  <li key={i} className="flex items-center justify-between bg-white border border-[#EFE6D9] rounded-xl px-4 py-3">
+                    <span className="font-semibold text-[#3E342E]">{s.name}</span>
+                    <span className="text-sm text-[#8C7F76]">{s.durationMins} min · ${s.price}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             <form onSubmit={handleAddService} className="flex flex-col gap-4">
               <div>
                 <label className={labelClass}>Service name</label>
                 <input type="text" value={serviceName}
                   onChange={e => setServiceName(e.target.value)}
-                  className={inputClass} placeholder="e.g. Full Groom & Style" required />
+                  className={inputClass} placeholder="e.g. Full Groom & Style" />
               </div>
               <div>
                 <label className={labelClass}>Duration (minutes)</label>
                 <input type="number" value={durationMins}
                   onChange={e => setDurationMins(e.target.value)}
-                  className={inputClass} placeholder="e.g. 60" required />
+                  className={inputClass} placeholder="e.g. 60" />
               </div>
               <div>
                 <label className={labelClass}>Price ($)</label>
                 <input type="number" value={price}
                   onChange={e => setPrice(e.target.value)}
-                  className={inputClass} placeholder="e.g. 45" required />
+                  className={inputClass} placeholder="e.g. 45" />
               </div>
-              <button type="submit" disabled={loading}
-                className="bg-[#E87E5B] text-white font-bold py-3 rounded-xl hover:bg-[#d46e4b] transition-colors disabled:opacity-50">
-                {loading ? 'Adding...' : 'Continue →'}
+              <button
+                type="submit"
+                disabled={loading || !serviceName || !durationMins || !price}
+                className="border border-[#E87E5B] text-[#E87E5B] font-bold py-3 rounded-xl hover:bg-[#FFF0EA] transition-colors disabled:opacity-40">
+                {loading ? 'Adding...' : '+ Add service'}
               </button>
             </form>
+
+            <button
+              onClick={() => setStep(3)}
+              className="mt-4 w-full bg-[#E87E5B] text-white font-bold py-3 rounded-xl hover:bg-[#d46e4b] transition-colors">
+              Continue →
+            </button>
           </div>
         )}
 
@@ -176,25 +207,45 @@ export default function BusinessOwnerPage() {
             <h1 className="font-['Bricolage_Grotesque'] text-3xl font-extrabold text-[#3E342E] mb-2">
               Add staff
             </h1>
-            <p className="text-[#8C7F76] mb-6">Step 3 of 3 — Who will serve customers?</p>
+            <p className="text-[#8C7F76] mb-6">Step 3 of 3 — Who will serve customers? (optional)</p>
+
+            {staffList.length > 0 && (
+              <ul className="mb-6 flex flex-col gap-2">
+                {staffList.map((s, i) => (
+                  <li key={i} className="flex items-center justify-between bg-white border border-[#EFE6D9] rounded-xl px-4 py-3">
+                    <span className="font-semibold text-[#3E342E]">{s.name}</span>
+                    <span className="text-sm text-[#8C7F76]">{s.role}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             <form onSubmit={handleAddStaff} className="flex flex-col gap-4">
               <div>
                 <label className={labelClass}>Staff name</label>
                 <input type="text" value={staffName}
                   onChange={e => setStaffName(e.target.value)}
-                  className={inputClass} placeholder="e.g. Ava Mitchell" required />
+                  className={inputClass} placeholder="e.g. Ava Mitchell" />
               </div>
               <div>
                 <label className={labelClass}>Role</label>
                 <input type="text" value={staffRole}
                   onChange={e => setStaffRole(e.target.value)}
-                  className={inputClass} placeholder="e.g. Master Groomer" required />
+                  className={inputClass} placeholder="e.g. Master Groomer" />
               </div>
-              <button type="submit" disabled={loading}
-                className="bg-[#E87E5B] text-white font-bold py-3 rounded-xl hover:bg-[#d46e4b] transition-colors disabled:opacity-50">
-                {loading ? 'Adding...' : 'Finish setup →'}
+              <button
+                type="submit"
+                disabled={loading || !staffName || !staffRole}
+                className="border border-[#E87E5B] text-[#E87E5B] font-bold py-3 rounded-xl hover:bg-[#FFF0EA] transition-colors disabled:opacity-40">
+                {loading ? 'Adding...' : '+ Add staff member'}
               </button>
             </form>
+
+            <button
+              onClick={() => navigate('/owner/manage')}
+              className="mt-4 w-full bg-[#E87E5B] text-white font-bold py-3 rounded-xl hover:bg-[#d46e4b] transition-colors">
+              Finish setup →
+            </button>
           </div>
         )}
 

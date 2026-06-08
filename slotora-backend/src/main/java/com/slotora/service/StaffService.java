@@ -9,12 +9,28 @@ import com.slotora.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class StaffService {
 
     private final StaffRepository staffRepository;
     private final BusinessRepository businessRepository;
+
+    public void deleteStaff(Long staffId) {
+        if (!staffRepository.existsById(staffId)) {
+            throw new ResourceNotFoundException("Staff not found");
+        }
+        staffRepository.deleteById(staffId);
+    }
+
+    public List<StaffResponse> getStaffByBusiness(Long businessId) {
+        return staffRepository.findByBusinessId(businessId).stream()
+                .map(s -> new StaffResponse(s.getId(), s.getName(), s.getRole(), s.getBusiness().getId()))
+                .collect(Collectors.toList());
+    }
 
     public StaffResponse createStaff(StaffRequest req) {
         var business = businessRepository.findById(req.getBusinessId())

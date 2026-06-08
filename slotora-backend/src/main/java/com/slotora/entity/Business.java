@@ -29,6 +29,10 @@ public class Business {
     @Column(columnDefinition ="TEXT")
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL)
     private List<Service> services=new ArrayList<>();
 

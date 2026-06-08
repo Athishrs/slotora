@@ -7,6 +7,7 @@ import MyBookingsPage from './pages/MyBookingsPage'
 import NewBookingPage from './pages/NewBookingPage'
 import LandingPage from './pages/LandingPage'
 import BusinessOwnerPage from './pages/BusinessOwnerPage'
+import ManageBusinessPage from './pages/ManageBusinessPage'
 
 export default function App() {
   return (
@@ -25,6 +26,9 @@ export default function App() {
       } />
       <Route path="/owner" element={
         <ProtectedRoute><BusinessOwnerPage /></ProtectedRoute>
+      } />
+      <Route path="/owner/manage" element={
+        <ProtectedRoute><ManageBusinessPage /></ProtectedRoute>
       } />
     </Routes>
   )
